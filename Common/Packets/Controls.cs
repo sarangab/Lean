@@ -90,6 +90,12 @@ namespace QuantConnect.Packets
         public int SecondTimeOut;
 
         /// <summary>
+        /// Maximum number of minutes, accurate to the nearest millisecond, to wait before completing a work in the thread pool
+        /// </summary>
+        [JsonProperty(PropertyName = "iTrainingTimeLoop")]
+        public int TrainingTimeLoop;
+
+        /// <summary>
         /// Initializes a new default instance of the <see cref="Controls"/> class
         /// </summary>
         public Controls()
@@ -105,6 +111,7 @@ namespace QuantConnect.Packets
             BacktestingMaxInsights = 10000;
             MaximumDataPointsPerChartSeries = 4000;
             SecondTimeOut = 300;
+            TrainingTimeLoop = 30;
         }
 
         /// <summary>

@@ -88,7 +88,8 @@ namespace QuantConnect.Queues
                 SecondLimit = Config.GetInt("symbol-second-limit", 10000),
                 TickLimit = Config.GetInt("symbol-tick-limit", 10000),
                 RamAllocation = int.MaxValue,
-                MaximumDataPointsPerChartSeries =  Config.GetInt("maximum-data-points-per-chart-series", 4000)
+                MaximumDataPointsPerChartSeries = Config.GetInt("maximum-data-points-per-chart-series", 4000),
+                TrainingTimeLoop = Config.GetInt("training-model-custom-loop-timeout", 30)
             };
 
             if ((Language)Enum.Parse(typeof(Language), Config.Get("algorithm-language")) == Language.Python)

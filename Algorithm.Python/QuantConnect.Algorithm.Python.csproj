@@ -62,6 +62,7 @@
     <Content Include="Alphas\VIXDualThrustAlpha.py" />
     <Content Include="BasicCSharpIntegrationTemplateAlgorithm.py" />
     <Content Include="BasicSetAccountCurrencyAlgorithm.py" />
+    <None Include="TrainExampleAlgorithm.py" />
     <None Include="USTreasuryYieldCurveDataAlgorithm.py" />
     <None Include="SmartInsiderDataAlgorithm.py" />
     <Content Include="KerasNeuralNetworkAlgorithm.py" />

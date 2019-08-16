@@ -43,7 +43,12 @@ namespace QuantConnect.Tests
     /// </summary>
     public static class AlgorithmRunner
     {
-        public static void RunLocalBacktest(string algorithm, Dictionary<string, string> expectedStatistics, AlphaRuntimeStatistics expectedAlphaStatistics, Language language)
+        public static void RunLocalBacktest(string algorithm,
+            Dictionary<string, string> expectedStatistics,
+            AlphaRuntimeStatistics expectedAlphaStatistics,
+            Language language,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
         {
             var statistics = new Dictionary<string, string>();
             var alphaStatistics = new AlphaRuntimeStatistics(new TestAccountCurrencyProvider());
@@ -96,8 +101,10 @@ namespace QuantConnect.Tests
                         try
                         {
                             string algorithmPath;
-                            var job = systemHandlers.JobQueue.NextJob(out algorithmPath);
-                            ((BacktestNodePacket)job).BacktestId = algorithm;
+                            var job = (BacktestNodePacket)systemHandlers.JobQueue.NextJob(out algorithmPath);
+                            job.BacktestId = algorithm;
+                            job.PeriodStart = startDate;
+                            job.PeriodFinish = endDate;
 
                             systemHandlers.LeanManager.Initialize(systemHandlers, algorithmHandlers, job, algorithmManager);
 

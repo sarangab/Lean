@@ -787,8 +787,8 @@ namespace QuantConnect.Tests.Common.Util
         {
             Action action = () => Thread.Sleep(2000);
 
-            // Timeout exception: wait 900 ms for a 2s work
-            var task = action.TimeoutAfterAndContinue(TimeSpan.FromMilliseconds(500));
+            // Timeout exception: wait 1.9 ms for a 2s work
+            var task = action.TimeoutAfterAndContinue(TimeSpan.FromMilliseconds(1900));
             var exception = Assert.Throws<AggregateException>(() => task.Wait());
             Assert.AreEqual(typeof(TimeoutException), exception.InnerException?.GetType());
         }

@@ -51,8 +51,7 @@ namespace QuantConnect.Lean.Engine
         private readonly object _lock;
         private DateTime _currentTimeStepTime;
         private readonly bool _liveMode;
-        private TimeSpan _timeLoopMaximum = TimeSpan.FromMinutes(Config.GetDouble("algorithm-manager-time-loop-maximum", 20));
-        private long _dataPointCount;
+        private TimeSpan _timeLoopMaximum;
 
         /// <summary>
         /// Publicly accessible algorithm status
@@ -105,15 +104,15 @@ namespace QuantConnect.Lean.Engine
         public AlgorithmManager(bool liveMode)
         {
             _lock = new object();
-            var timeLoopMaximum
+            _timeLoopMaximum
                 = TimeSpan.FromMinutes(Config.GetDouble("algorithm-manager-time-loop-maximum", 20));
             AlgorithmId = "";
             TimeLoopWithinLimits = () =>
             {
                 var message = string.Empty;
-                if (CurrentTimeStepElapsed > timeLoopMaximum)
+                if (CurrentTimeStepElapsed > _timeLoopMaximum)
                 {
-                    message = $"Algorithm took longer than {timeLoopMaximum.TotalMinutes} minutes on a single time loop.";
+                    message = $"Algorithm took longer than {_timeLoopMaximum.TotalMinutes} minutes on a single time loop.";
                 }
 
                 return new IsolatorLimitResult(CurrentTimeStepElapsed, message);

@@ -41,7 +41,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                 if (exception is DirectoryNotFoundException
                     || exception is FileNotFoundException)
                 {
-                    Log.Error("DefaultDataProvider.Fetch(): The specified file was not found: {0}", key);
+                    //Log.Error("DefaultDataProvider.Fetch(): The specified file was not found: {0}", key);
                     return null;
                 }
                 throw;

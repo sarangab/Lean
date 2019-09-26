@@ -103,6 +103,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     if (!enumerator.MoveNext())
                     {
                         // the enumerator ended
+                        Log.Trace("Synchronizer.GetEnumerator(): No more data in the enumerator. Exiting loop");
                         break;
                     }
                     timeSlice = enumerator.Current;
@@ -117,7 +118,18 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                 }
 
                 // check for cancellation
-                if (timeSlice == null || cancellationToken.IsCancellationRequested) break;
+                if (timeSlice == null || cancellationToken.IsCancellationRequested)
+                {
+                    if (timeSlice == null)
+                    {
+                        Log.Trace("Synchronizer.GetEnumerator(): Time slice is null. Exiting loop");
+                    }
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Log.Trace("Synchronizer.GetEnumerator(): Cancellation token requested. Exiting loop");
+                    }
+                    break;
+                }
 
                 // SubscriptionFrontierTimeProvider will return twice the same time if there are no more subscriptions or if Subscription.Current is null
                 if (timeSlice.Time != previousEmitTime || previousWasTimePulse)
@@ -136,6 +148,14 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     if (!timeSlice.Slice.HasData || retried)
                     {
                         // there's no more data to pull off, we're done (frontier is max value and no security changes)
+                        if (!timeSlice.Slice.HasData)
+                        {
+                            Log.Trace("Synchronizer.GetEnumerator(): TimeSlice.Slice has no data. Exiting loop");
+                        }
+                        if (retried)
+                        {
+                            Log.Trace("Synchronizer.GetEnumerator(): Retried. Exiting loop");
+                        }
                         break;
                     }
                     retried = true;

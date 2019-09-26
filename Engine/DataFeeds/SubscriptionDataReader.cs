@@ -482,11 +482,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     //Log.Error(string.Format("Failed to get StreamReader for data source({0}), symbol({1}). Skipping date({2}). Reader is null.", args.Source.Source, _mappedSymbol, args.Date.ToShortDateString()));
                     if (_config.IsCustomData)
                     {
-                        OnDownloadFailed(
-                            new DownloadFailedEventArgs(
-                                "We could not fetch the requested data. " +
-                                "This may not be valid data, or a failed download of custom data. " +
-                                $"Skipping source ({args.Source.Source})."));
+                        //OnDownloadFailed(
+                        //    new DownloadFailedEventArgs(
+                        //        "We could not fetch the requested data. " +
+                        //        "This may not be valid data, or a failed download of custom data. " +
+                        //        $"Skipping source ({args.Source.Source})."));
                     }
                 };
 

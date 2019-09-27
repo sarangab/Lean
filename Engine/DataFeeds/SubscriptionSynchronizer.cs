@@ -102,6 +102,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     newChanges = SecurityChanges.None;
                     foreach (var subscription in subscriptions)
                     {
+                        if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                        {
+                            Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} has current?: {subscription.Current != null}, Removed from universe?: {subscription.RemovedFromUniverse}, {subscription.Configuration.Symbol.Value}");
+                        }
                         if (subscription.EndOfStream)
                         {
                             OnSubscriptionFinished(subscription);
@@ -115,6 +119,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                             {
                                 OnSubscriptionFinished(subscription);
                                 continue;
+                            }
+                            else if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                            {
+                                Logging.Log.Trace($"Subscription advanced one step on {frontierUtc:yyyy-MM-dd HH:mm:ss}. Is null?: {subscription.Current == null}");
                             }
                         }
 
@@ -145,6 +153,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
 
                             if (!subscription.MoveNext())
                             {
+                                Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): MoveNext() call returned false for {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
                                 delayedSubscriptionFinished = true;
                                 break;
                             }
@@ -155,10 +164,16 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                             // we have new universe data to select based on, store the subscription data until the end
                             if (!subscription.IsUniverseSelectionSubscription)
                             {
+                                if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                                {
+                                    Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Adding data to packet because subscription is universe selection subscription for symbol: {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
+                                }
                                 data.Add(packet);
                             }
                             else
                             {
+                                Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): {subscription.Security.Symbol.Value} Is not universe selection subscription on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
+
                                 // assume that if the first item is a base data collection then the enumerator handled the aggregation,
                                 // otherwise, load all the the data into a new collection instance
                                 var packetBaseDataCollection = packet.Data[0] as BaseDataCollection;
@@ -169,6 +184,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                                 BaseDataCollection collection;
                                 if (universeData.TryGetValue(subscription.Universes.Single(), out collection))
                                 {
+                                    if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                                    {
+                                        Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Adding packetData to collection.Data for symbol {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
+                                    }
                                     collection.Data.AddRange(packetData);
                                 }
                                 else
@@ -185,6 +204,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                                     else
                                     {
                                         collection = new BaseDataCollection(frontierUtc, subscription.Configuration.Symbol, packetData);
+                                    }
+
+                                    if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                                    {
+                                        Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Adding to universeData for symbol {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
                                     }
 
                                     universeData[subscription.Universes.Single()] = collection;

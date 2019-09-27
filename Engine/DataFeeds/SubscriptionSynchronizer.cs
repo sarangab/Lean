@@ -119,6 +119,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         }
 
                         DataFeedPacket packet = null;
+                        
+                        if (!(subscription.Current.EmitTimeUtc <= frontierUtc))
+                        {
+                            Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Start: {subscription.UtcStartTime:yyyy-MM-dd HH:mm:ss}, End: {subscription.UtcEndTime:yyyy-MM-dd HH:mm:ss} - Subscription current emit time is greater than the frontier. Current: {subscription.Current.EmitTimeUtc:yyyy-MM-dd HH:mm:ss}, frontier: {frontierUtc:yyyy-MM-dd HH:mm:ss}");
+                        }
 
                         while (subscription.Current != null && subscription.Current.EmitTimeUtc <= frontierUtc)
                         {
@@ -131,6 +136,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                                     subscription.RemovedFromUniverse
                                 );
                             }
+                            if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                            {
+                                Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Adding {subscription.Current.Data.Symbol.Value} with time {subscription.Current.Data.Time:yyyy-MM-dd HH:mm:ss} to packet");
+                            }
+
                             packet.Add(subscription.Current.Data);
 
                             if (!subscription.MoveNext())

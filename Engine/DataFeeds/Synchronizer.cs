@@ -145,6 +145,9 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     // if the slice has data lets retry just once more... this could happen
                     // with subscriptions added after initialize using algorithm.AddSecurity() API,
                     // where the subscription start time is the current time loop (but should just happen once)
+                    Log.Trace($"{timeSlice.Time:yyyy-MM-dd HH:mm:ss} != {previousEmitTime: yyyy-MM-dd HH:mm:ss} || {previousWasTimePulse}");
+                    Log.Trace($"Synchronizer.GetEnumerator(): Is TimeSlice a TimePulse: {timeSlice.IsTimePulse}");
+
                     if (!timeSlice.Slice.HasData || retried)
                     {
                         // there's no more data to pull off, we're done (frontier is max value and no security changes)
@@ -158,6 +161,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         }
                         break;
                     }
+                    Log.Trace("Synchronizer.GetEnumerator(): No SecurityChanges, but going to retry");
                     retried = true;
                 }
             }

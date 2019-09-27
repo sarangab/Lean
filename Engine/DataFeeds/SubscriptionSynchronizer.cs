@@ -196,6 +196,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     {
                         // if we are going to perform universe selection we emit an empty
                         // time pulse to align algorithm time with current frontier
+                        Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Emitting time pulse @ {frontierUtc:yyyy-MM-dd HH:mm:ss}");
                         yield return _timeSliceFactory.CreateTimePulse(frontierUtc);
                     }
 
@@ -204,6 +205,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         var universe = kvp.Key;
                         var baseDataCollection = kvp.Value;
                         universeDataForTimeSliceCreate[universe] = baseDataCollection;
+                        Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Applying universe selection w/ frontier @ {frontierUtc:yyyy-MM-dd HH:mm:ss}");
                         newChanges += _universeSelection.ApplyUniverseSelection(universe, frontierUtc, baseDataCollection);
                     }
                     universeData.Clear();

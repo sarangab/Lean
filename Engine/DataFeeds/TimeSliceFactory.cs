@@ -129,6 +129,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                 }
             }
 
+            if (data.Count == 0)
+            {
+                Log.Trace($"TimeSliceFactory.Create(): There is no data on {utcDateTime:yyyy-MM-dd HH:mm:ss}");
+            }
+
             // ensure we read equity data before option data, so we can set the current underlying price
             foreach (var packet in data)
             {
@@ -156,6 +161,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                 else
                 {
                     count += list.Count;
+                }
+
+                if (packet.Configuration.IsInternalFeed && packet.Configuration.IsCustomData)
+                {
+                    Log.Trace($"TimeSliceFactory.Create(): Is internal feed and is custom data. Contains: {packet.Data.Count} and symbol: {packet.Security.Symbol.Value}");
                 }
 
                 if (!packet.Configuration.IsInternalFeed && packet.Configuration.IsCustomData)

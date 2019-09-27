@@ -218,6 +218,11 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Applying universe selection w/ frontier @ {frontierUtc:yyyy-MM-dd HH:mm:ss}");
                         newChanges += _universeSelection.ApplyUniverseSelection(universe, frontierUtc, baseDataCollection);
 
+                        if (newChanges == SecurityChanges.None)
+                        {
+                            Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Universe selection applied, but no changes were found on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
+                        }
+
                         Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Added {newChanges.AddedSecurities.Count}, Removed {newChanges.RemovedSecurities.Count} securities from universe");
                     }
                     universeData.Clear();

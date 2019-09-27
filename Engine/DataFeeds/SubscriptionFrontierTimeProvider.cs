@@ -84,6 +84,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         earlyBirdTicks = Math.Min(earlyBirdTicks, subscription.Current.EmitTimeUtc.Ticks);
                     }
                 }
+                else
+                {
+                    Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTime(): Subscription data is null: {subscription.Security.Symbol.Value}");
+                }
             }
 
             if (earlyBirdTicks != MaxDateTimeTicks)

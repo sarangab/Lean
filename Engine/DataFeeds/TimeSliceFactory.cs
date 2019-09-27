@@ -167,7 +167,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     {
                         if (utcDateTime.Date == new DateTime(2013, 2, 13))
                         {
-                            Log.Trace($"TimeSliceFactory.Create(): Continuing for packet {packet.Security.Symbol.Value} baseDataCollectionCount had no data");
+                            Log.Trace($"TimeSliceFactory.Create(): Continuing for packet {packet.Security.Symbol.Value} baseDataCollectionCount had no data.");
                         }
                         continue;
                     }

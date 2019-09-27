@@ -104,7 +104,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     {
                         if (frontierUtc.Date == new DateTime(2018, 2, 13))
                         {
-                            Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} has current?: {subscription.Current != null}, Removed from universe?: {subscription.RemovedFromUniverse}, {subscription.Configuration.Symbol.Value}");
+                            Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} has current?: {subscription.Current != null}, Removed from universe?: {subscription.RemovedFromUniverse.Value}, {subscription.Configuration.Symbol.Value}");
                         }
                         if (subscription.EndOfStream)
                         {

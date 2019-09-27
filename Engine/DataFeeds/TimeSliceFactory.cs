@@ -140,13 +140,24 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                 // filter out packets for removed subscriptions
                 if (packet.IsSubscriptionRemoved)
                 {
+                    if (utcDateTime.Date == new DateTime(2013, 2, 13))
+                    {
+                        Log.Trace($"TimeSliceFactory.Create(): Continuing for packet {packet.Security.Symbol.Value} because subscription was removed on {utcDateTime:yyyy-MM-dd HH:mm:ss}");
+                    }
                     continue;
                 }
 
                 var list = packet.Data;
                 var symbol = packet.Configuration.Symbol;
 
-                if (list.Count == 0) continue;
+                if (list.Count == 0)
+                {
+                    if (utcDateTime.Date == new DateTime(2013, 2, 13))
+                    {
+                        Log.Trace($"TimeSliceFactory.Create(): Continuing for packet {packet.Security.Symbol.Value} packet.Data has no data");
+                    }
+                    continue;
+                }
 
                 // keep count of all data points
                 if (list.Count == 1 && list[0] is BaseDataCollection)
@@ -154,6 +165,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     var baseDataCollectionCount = ((BaseDataCollection)list[0]).Data.Count;
                     if (baseDataCollectionCount == 0)
                     {
+                        if (utcDateTime.Date == new DateTime(2013, 2, 13))
+                        {
+                            Log.Trace($"TimeSliceFactory.Create(): Continuing for packet {packet.Security.Symbol.Value} baseDataCollectionCount had no data");
+                        }
                         continue;
                     }
                     count += baseDataCollectionCount;
@@ -305,13 +320,21 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         // this is the data used set market prices
                         // do not add it if it is a Suspicious tick
                         if (tick != null && tick.Suspicious) continue;
-
+                        
+                        if (utcDateTime.Date == new DateTime(2013, 2, 13))
+                        {
+                            Log.Trace($"TimeSliceFactory.Create(): Adding to securityUpdate baseData on {utcDateTime.Date:yyyy-MM-dd HH:mm:ss}");
+                        }
                         securityUpdate.Add(baseData);
 
                         // option underlying security update
                         if (!packet.Configuration.IsInternalFeed
                             && symbol.SecurityType == SecurityType.Equity)
                         {
+                            if (utcDateTime.Date == new DateTime(2013, 2, 13))
+                            {
+                                Log.Trace($"TimeSliceFactory.Create(): Not internal feed and SecurityType is equity. Symbol is {symbol.Value} - will be updated as part of optionUnderlyingUpdates");
+                            }
                             optionUnderlyingUpdates[symbol] = baseData;
                         }
                     }
@@ -356,6 +379,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
 
                 if (securityUpdate.Count > 0)
                 {
+                    if (utcDateTime.Date == new DateTime(2013, 2, 13))
+                    {
+                        Log.Trace($"TimeSliceFactory.Create(): Adding packet to local security variable with params: Symbol: {packet.Security.Symbol.Value}, Packet config typename: {packet.Configuration.Type.FullName}, SecurityUpdate count: {securityUpdate.Count}, IsInternalFeed: {packet.Configuration.IsInternalFeed}");
+                    }
                     security.Add(new UpdateData<ISecurityPrice>(packet.Security, packet.Configuration.Type, securityUpdate, packet.Configuration.IsInternalFeed));
                 }
                 if (consolidatorUpdate.Count > 0)

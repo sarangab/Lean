@@ -68,6 +68,12 @@ namespace QuantConnect.Lean.Engine.DataFeeds
 
                 if (subscription.Current != null)
                 {
+                    if (subscription.UtcStartTime.Date == new DateTime(2018, 2, 13) || subscription.UtcEndTime.Date == new DateTime(2018, 2, 13))
+                    {
+                        Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTime(): Subscription start: {subscription.UtcStartTime:yyyy-MM-dd HH:mm:ss}, end: {subscription.UtcEndTime.Date:yyyy-MM-dd HH:mm:ss}");
+                        Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTIme(): TZ: {subscription.TimeZone}, universe selection subscription: {subscription.IsUniverseSelectionSubscription}, {subscription.Configuration.Symbol.Value}");
+                        Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTime(): Current time: {subscription.Current.Data.Time:yyyy-MM-dd HH:mm:ss}");
+                    }
                     if (earlyBirdTicks == MaxDateTimeTicks)
                     {
                         earlyBirdTicks = subscription.Current.EmitTimeUtc.Ticks;

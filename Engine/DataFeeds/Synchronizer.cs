@@ -145,8 +145,9 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     // if the slice has data lets retry just once more... this could happen
                     // with subscriptions added after initialize using algorithm.AddSecurity() API,
                     // where the subscription start time is the current time loop (but should just happen once)
-                    Log.Trace($"{timeSlice.Time:yyyy-MM-dd HH:mm:ss} != {previousEmitTime: yyyy-MM-dd HH:mm:ss} || {previousWasTimePulse}");
+                    Log.Trace($"Synchronizer.GetEnumerator(): Checking previous conditional {timeSlice.Time:yyyy-MM-dd HH:mm:ss} != {previousEmitTime: yyyy-MM-dd HH:mm:ss} || {previousWasTimePulse}");
                     Log.Trace($"Synchronizer.GetEnumerator(): Is TimeSlice a TimePulse: {timeSlice.IsTimePulse}");
+                    Log.Trace($"Synchronizer.GetEnumerator(): Contains custom data: {timeSlice.CustomData.Count}");
 
                     if (!timeSlice.Slice.HasData || retried)
                     {

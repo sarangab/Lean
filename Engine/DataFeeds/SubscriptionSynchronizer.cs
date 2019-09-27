@@ -207,6 +207,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         universeDataForTimeSliceCreate[universe] = baseDataCollection;
                         Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Applying universe selection w/ frontier @ {frontierUtc:yyyy-MM-dd HH:mm:ss}");
                         newChanges += _universeSelection.ApplyUniverseSelection(universe, frontierUtc, baseDataCollection);
+
+                        Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): Added {newChanges.AddedSecurities.Count}, Removed {newChanges.RemovedSecurities.Count} securities from universe");
                     }
                     universeData.Clear();
 

@@ -320,7 +320,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         // do not add it if it is a Suspicious tick
                         if (tick != null && tick.Suspicious) continue;
                         
-                        Log.Trace($"TimeSliceFactory.Create(): Adding to securityUpdate baseData on {utcDateTime.Date:yyyy-MM-dd HH:mm:ss}");
+                        Log.Trace($"TimeSliceFactory.Create(): Adding to securityUpdate baseData on {utcDateTime.Date:yyyy-MM-dd HH:mm:ss}.");
                         securityUpdate.Add(baseData);
 
                         // option underlying security update

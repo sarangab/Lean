@@ -84,9 +84,9 @@ namespace QuantConnect.Lean.Engine.DataFeeds
         public IEnumerable<TimeSlice> Sync(IEnumerable<Subscription> subscriptions,
             CancellationToken cancellationToken)
         {
+            var delayedSubscriptionFinished = new Queue<Subscription>();
             while (!cancellationToken.IsCancellationRequested)
             {
-                var delayedSubscriptionFinished = false;
                 var changes = SecurityChanges.None;
                 var data = new List<DataFeedPacket>(1);
                 // NOTE: Tight coupling in UniverseSelection.ApplyUniverseSelection
@@ -104,7 +104,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     {
                         if (frontierUtc.Date == new DateTime(2018, 2, 13))
                         {
-                            Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} has current?: {subscription.Current != null}, Removed from universe?: {subscription.RemovedFromUniverse.Value}, {subscription.Configuration.Symbol.Value}");
+                            Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} has current?: {subscription.Current != null}, Removed from universe?: {subscription.RemovedFromUniverse.Value}, EndOfStream?: {subscription.EndOfStream}, {subscription.Configuration.Symbol.Value}");
                         }
                         if (subscription.EndOfStream)
                         {
@@ -117,6 +117,10 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         {
                             if (!subscription.MoveNext())
                             {
+                                if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                                {
+                                    Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} OnSubscriptionFinished 1");
+                                }
                                 OnSubscriptionFinished(subscription);
                                 continue;
                             }
@@ -153,8 +157,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds
 
                             if (!subscription.MoveNext())
                             {
-                                Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): MoveNext() call returned false for {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}");
-                                delayedSubscriptionFinished = true;
+                                Logging.Log.Trace($"SubscriptionSynchronizer.Sync(): MoveNext() call returned false for {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}, Removed from universe?: {subscription.RemovedFromUniverse.Value}");
+                                delayedSubscriptionFinished.Enqueue(subscription);
                                 break;
                             }
                         }
@@ -217,10 +221,12 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                         }
 
                         if (subscription.IsUniverseSelectionSubscription
-                            && subscription.Universes.Single().DisposeRequested
-                            || delayedSubscriptionFinished)
+                            && subscription.Universes.Single().DisposeRequested)
                         {
-                            delayedSubscriptionFinished = false;
+                            if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                            {
+                                Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss} OnSubscriptionFinished 2");
+                            }
                             // we need to do this after all usages of subscription.Universes
                             OnSubscriptionFinished(subscription);
                         }
@@ -257,6 +263,23 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     || _universeSelection.AddPendingInternalDataFeeds(frontierUtc));
 
                 var timeSlice = _timeSliceFactory.Create(frontierUtc, data, changes, universeDataForTimeSliceCreate);
+
+                while (delayedSubscriptionFinished.Count > 0)
+                {
+                    // these subscriptions added valid data to the packet
+                    // we need to trigger OnSubscriptionFinished after we create the TimeSlice
+                    // else it will drop the data
+                    var subscription = delayedSubscriptionFinished.Dequeue();
+                    if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                    {
+                        Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}, Removed from universe?: {subscription.RemovedFromUniverse.Value}, OnSubscriptionFinished 3");
+                    }
+                    OnSubscriptionFinished(subscription);
+                    if (frontierUtc.Date == new DateTime(2018, 2, 13))
+                    {
+                        Logging.Log.Trace($"Subscription {subscription.Security.Symbol.Value} on {frontierUtc:yyyy-MM-dd HH:mm:ss}, Removed from universe?: {subscription.RemovedFromUniverse.Value}, OnSubscriptionFinished 4");
+                    }
+                }
 
                 yield return timeSlice;
             }

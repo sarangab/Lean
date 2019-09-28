@@ -66,13 +66,13 @@ namespace QuantConnect.Lean.Engine.DataFeeds
                     subscription.MoveNext();
                 }
 
-                if (subscription.Current != null)
+                if (subscription.Current != null && !subscription.RemovedFromUniverse.Value)
                 {
                     if (subscription.UtcStartTime.Date == new DateTime(2018, 2, 13) || subscription.UtcEndTime.Date == new DateTime(2018, 2, 13))
                     {
-                        Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTime(): Subscription start: {subscription.UtcStartTime:yyyy-MM-dd HH:mm:ss}, end: {subscription.UtcEndTime.Date:yyyy-MM-dd HH:mm:ss}");
-                        Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTIme(): TZ: {subscription.TimeZone}, universe selection subscription: {subscription.IsUniverseSelectionSubscription}, {subscription.Configuration.Symbol.Value}");
-                        Logging.Log.Trace($"SubscriptionFrontierProvider.UpdateCurrentTime(): Current time: {subscription.Current.Data.Time:yyyy-MM-dd HH:mm:ss}");
+                        Logging.Log.Trace($"SubscriptionFrontierTimeProvider.UpdateCurrentTime(): Subscription start: {subscription.UtcStartTime:yyyy-MM-dd HH:mm:ss}, end: {subscription.UtcEndTime.Date:yyyy-MM-dd HH:mm:ss}");
+                        Logging.Log.Trace($"SubscriptionFrontierTimeProvider.UpdateCurrentTIme(): TZ: {subscription.TimeZone}, universe selection subscription: {subscription.IsUniverseSelectionSubscription}, {subscription.Configuration.Symbol.Value}");
+                        Logging.Log.Trace($"SubscriptionFrontierTimeProvider.UpdateCurrentTime(): Current time: {subscription.Current.Data.Time:yyyy-MM-dd HH:mm:ss}");
                     }
                     if (earlyBirdTicks == MaxDateTimeTicks)
                     {

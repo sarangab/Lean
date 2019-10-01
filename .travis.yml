@@ -21,6 +21,6 @@ install:
   - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
   - msbuild /p:Configuration=Release /p:VbcToolExe=vbnc.exe QuantConnect.Lean.sln
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Tests/bin/Release/QuantConnect.Tests.dll --exclude:TravisExclude --labels
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe /framework=net-4.5.2 ./Tests/bin/Release/QuantConnect.Tests.dll --exclude:TravisExclude --labels
 after_success:
   - coveralls
